@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.tabarak.quranwords.ui.components.AppBottomBar
 import com.tabarak.quranwords.util.viewModelWithRepo
-import androidx.compose.foundation.layout.weight
 
 @Composable
 fun SearchScreen(navController: NavHostController) {

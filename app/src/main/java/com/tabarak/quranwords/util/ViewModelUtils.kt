@@ -26,7 +26,7 @@ class GenericViewModelFactory<T : ViewModel>(
 }
 
 @Composable
-fun <T : ViewModel> viewModelWithRepo(creator: (WordRepository) -> T): T {
+inline fun <reified T : ViewModel> viewModelWithRepo(crossinline creator: (WordRepository) -> T): T {
     val repo = rememberRepository()
-    return viewModel(factory = GenericViewModelFactory { creator(repo) })
+    return viewModel<T>(factory = GenericViewModelFactory { creator(repo) })
 }

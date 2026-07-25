@@ -29,7 +29,6 @@ import androidx.navigation.NavHostController
 import com.tabarak.quranwords.ui.navigation.Routes
 import com.tabarak.quranwords.util.viewModelWithRepo
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.weight
 import androidx.compose.runtime.collectAsState
 
 @Composable

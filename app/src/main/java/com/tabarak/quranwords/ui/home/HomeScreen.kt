@@ -27,7 +27,6 @@ import com.tabarak.quranwords.ui.components.AppBottomBar
 import com.tabarak.quranwords.ui.navigation.Routes
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
