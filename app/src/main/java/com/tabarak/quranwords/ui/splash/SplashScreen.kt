@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,7 +69,8 @@ fun SplashScreen(navController: NavHostController) {
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                            Color(0xFF0F3D2E),
+                            Color(0xFF1D5C4A),
                             MaterialTheme.colorScheme.background
                         )
                     )
@@ -90,7 +92,7 @@ fun SplashScreen(navController: NavHostController) {
                         modifier = Modifier
                             .size(96.dp)
                             .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                                color = Color(0xFFCFB46A).copy(alpha = 0.18f),
                                 shape = CircleShape
                             ),
                         contentAlignment = Alignment.Center
@@ -98,7 +100,7 @@ fun SplashScreen(navController: NavHostController) {
                         Icon(
                             imageVector = Icons.Filled.School,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = Color(0xFFCFB46A),
                             modifier = Modifier.size(44.dp)
                         )
                     }
@@ -106,14 +108,17 @@ fun SplashScreen(navController: NavHostController) {
                     Text(
                         modifier = Modifier.padding(top = 20.dp),
                         text = "المدرسة الظاهرية",
-                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFCFB46A)
+                        ),
                         textAlign = TextAlign.Center
                     )
 
                     Text(
                         modifier = Modifier.padding(top = 12.dp),
                         text = "بإشراف الشيخ محمد حمزة عطار",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFFE6E1C5)),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -122,7 +127,7 @@ fun SplashScreen(navController: NavHostController) {
 
                 Text(
                     text = "Made with ❤️ by Bahaa Aldeen Nawlo",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFE6E1C5)),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
