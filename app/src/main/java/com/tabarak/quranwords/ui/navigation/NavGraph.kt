@@ -13,6 +13,7 @@ import com.tabarak.quranwords.ui.home.HomeScreen
 import com.tabarak.quranwords.ui.quiz.QuizScreen
 import com.tabarak.quranwords.ui.random.RandomReviewScreen
 import com.tabarak.quranwords.ui.search.SearchScreen
+import com.tabarak.quranwords.ui.splash.SplashScreen
 import com.tabarak.quranwords.ui.stats.StatsScreen
 import com.tabarak.quranwords.ui.surah.SurahListScreen
 import com.tabarak.quranwords.ui.words.WordListScreen
@@ -20,6 +21,7 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 object Routes {
+    const val SPLASH = "splash"
     const val HOME = "home"
     const val SURAHS = "surahs/{juz}"
     const val WORDS = "words/{surah}"
@@ -43,7 +45,11 @@ object Routes {
 fun AppNavGraph() {
     val navController: NavHostController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.HOME) {
+    NavHost(navController = navController, startDestination = Routes.SPLASH) {
+
+        composable(Routes.SPLASH) {
+            SplashScreen(navController = navController)
+        }
 
         composable(Routes.HOME) {
             HomeScreen(navController = navController)
