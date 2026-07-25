@@ -13,6 +13,9 @@ interface WordDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(words: List<WordEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(word: WordEntity)
+
     @Query("SELECT COUNT(*) FROM words")
     suspend fun count(): Int
 

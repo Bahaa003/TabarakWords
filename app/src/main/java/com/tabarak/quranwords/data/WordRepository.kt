@@ -14,8 +14,8 @@ class WordRepository(context: Context) {
     private val dao = db.wordDao()
 
     suspend fun ensureSeeded() {
-        if (dao.count() == 0) {
-            val words = JsonSeeder.loadWordsFromAssets(appContext)
+        val words = JsonSeeder.loadWordsFromAssets(appContext)
+        if (words.isNotEmpty()) {
             dao.insertAll(words)
         }
     }
@@ -30,7 +30,32 @@ class WordRepository(context: Context) {
 
     suspend fun getWordsBySurah(surah: String): List<WordEntity> = dao.getWordsBySurah(surah)
 
+    suspend fun refreshWordsBySurah(surah: String) {
+        val current = dao.getWordsBySurah(surah)
+        if (current.isEmpty()) {
+            val words = JsonSeeder.loadWordsFromAssets(appContext)
+            dao.insertAll(words.filter { it.surah == surah })
+        }
+    }
+
     suspend fun getAllWordsOnce(): List<WordEntity> = dao.getAllWordsOnce()
+
+    suspend fun addCustomWord(juz: String, word: String, meaning: String) {
+        val generatedId = (System.currentTimeMillis() % 1_000_000_000L).toInt()
+        val defaultSurah = when (juz) {
+            "جزء عم" -> "سورة النبأ"
+            else -> "سورة الملك"
+        }
+        val entity = WordEntity(
+            id = generatedId,
+            juz = juz,
+            surah = defaultSurah,
+            word = word.trim(),
+            meaning = meaning.trim(),
+            needsReview = true
+        )
+        dao.insert(entity)
+    }
 
     fun observeFavorites(): Flow<List<WordEntity>> = dao.observeFavorites()
 
