@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoStories
@@ -145,11 +147,15 @@ fun HomeScreen(navController: NavHostController) {
                             }
                         }
                         2 -> {
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            val scrollState = rememberScrollState()
+                            Column(
+                                modifier = Modifier.verticalScroll(scrollState),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
                                 surahOptions.forEach { surah ->
                                     FilterChip(
                                         selected = selectedSurah == surah,
-                                        onClick = { selectedSurah = surah },
+                                        onClick = { selectedSurah = surah.trim() },
                                         label = { Text(surah) }
                                     )
                                 }
@@ -184,16 +190,22 @@ fun HomeScreen(navController: NavHostController) {
                         else -> {
                             val cleanedWord = wordInput.trim()
                             val cleanedMeaning = meaningInput.trim()
+                            val chosenJuz = selectedJuz.trim()
+                            val chosenSurah = selectedSurah.trim().ifEmpty {
+                                surahOptions.firstOrNull() ?: if (chosenJuz == "جزء عم") "سورة النبأ" else "سورة الملك"
+                            }
+
                             if (cleanedWord.isNotEmpty() && cleanedMeaning.isNotEmpty()) {
+                                selectedSurah = chosenSurah
                                 scope.launch {
-                                    app.repository.addCustomWord(selectedJuz, selectedSurah, cleanedWord, cleanedMeaning)
+                                    app.repository.addCustomWord(chosenJuz, chosenSurah, cleanedWord, cleanedMeaning)
                                 }
                                 Toast.makeText(context, "تمت إضافة الكلمة بنجاح", Toast.LENGTH_SHORT).show()
                                 showAddDialog = false
                                 currentStep = 1
                                 wordInput = ""
                                 meaningInput = ""
-                                selectedSurah = if (selectedJuz == "جزء عم") "سورة النبأ" else "سورة الملك"
+                                selectedSurah = chosenSurah
                             }
                         }
                     }
