@@ -40,16 +40,12 @@ class WordRepository(context: Context) {
 
     suspend fun getAllWordsOnce(): List<WordEntity> = dao.getAllWordsOnce()
 
-    suspend fun addCustomWord(juz: String, word: String, meaning: String) {
+    suspend fun addCustomWord(juz: String, surah: String, word: String, meaning: String) {
         val generatedId = (System.currentTimeMillis() % 1_000_000_000L).toInt()
-        val defaultSurah = when (juz) {
-            "جزء عم" -> "سورة النبأ"
-            else -> "سورة الملك"
-        }
         val entity = WordEntity(
             id = generatedId,
             juz = juz,
-            surah = defaultSurah,
+            surah = surah.trim().ifEmpty { "غير محدد" },
             word = word.trim(),
             meaning = meaning.trim(),
             needsReview = true

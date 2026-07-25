@@ -23,6 +23,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +53,7 @@ fun HomeScreen(navController: NavHostController) {
 
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
     var selectedJuz by rememberSaveable { mutableStateOf("جزء تبارك") }
+    var selectedSurah by rememberSaveable { mutableStateOf("سورة الملك") }
     var wordInput by rememberSaveable { mutableStateOf("") }
     var meaningInput by rememberSaveable { mutableStateOf("") }
 
@@ -98,14 +100,36 @@ fun HomeScreen(navController: NavHostController) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
                             selected = selectedJuz == "جزء عم",
-                            onClick = { selectedJuz = "جزء عم" },
+                            onClick = {
+                                selectedJuz = "جزء عم"
+                                selectedSurah = "سورة النبأ"
+                            },
                             label = { Text("جزء عم") }
                         )
                         FilterChip(
                             selected = selectedJuz == "جزء تبارك",
-                            onClick = { selectedJuz = "جزء تبارك" },
+                            onClick = {
+                                selectedJuz = "جزء تبارك"
+                                selectedSurah = "سورة الملك"
+                            },
                             label = { Text("جزء تبارك") }
                         )
+                    }
+
+                    Text("اختر السورة:")
+                    val surahOptions = if (selectedJuz == "جزء عم") {
+                        listOf("سورة النبأ", "سورة النازعات", "سورة عبس")
+                    } else {
+                        listOf("سورة الملك", "سورة المرسلات", "سورة النبأ")
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        surahOptions.forEach { surah ->
+                            FilterChip(
+                                selected = selectedSurah == surah,
+                                onClick = { selectedSurah = surah },
+                                label = { Text(surah) }
+                            )
+                        }
                     }
 
                     OutlinedTextField(
@@ -130,12 +154,13 @@ fun HomeScreen(navController: NavHostController) {
                     val cleanedMeaning = meaningInput.trim()
                     if (cleanedWord.isNotEmpty() && cleanedMeaning.isNotEmpty()) {
                         scope.launch {
-                            app.repository.addCustomWord(selectedJuz, cleanedWord, cleanedMeaning)
+                            app.repository.addCustomWord(selectedJuz, selectedSurah, cleanedWord, cleanedMeaning)
                         }
                         Toast.makeText(context, "تمت إضافة الكلمة بنجاح", Toast.LENGTH_SHORT).show()
                         showAddDialog = false
                         wordInput = ""
                         meaningInput = ""
+                        selectedSurah = if (selectedJuz == "جزء عم") "سورة النبأ" else "سورة الملك"
                     }
                 }) {
                     Text("إضافة")
