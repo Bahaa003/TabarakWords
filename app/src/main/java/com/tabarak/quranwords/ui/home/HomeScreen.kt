@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,10 +52,69 @@ fun HomeScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
 
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    var currentStep by rememberSaveable { mutableStateOf(1) }
     var selectedJuz by rememberSaveable { mutableStateOf("جزء تبارك") }
     var selectedSurah by rememberSaveable { mutableStateOf("سورة الملك") }
     var wordInput by rememberSaveable { mutableStateOf("") }
     var meaningInput by rememberSaveable { mutableStateOf("") }
+
+    val surahOptions = if (selectedJuz == "جزء عم") {
+        listOf(
+            "سورة النبأ",
+            "سورة النازعات",
+            "سورة عبس",
+            "سورة التكوير",
+            "سورة الإنفطار",
+            "سورة المطففين",
+            "سورة الإنشقاق",
+            "سورة البروج",
+            "سورة الطارق",
+            "سورة الأعلى",
+            "سورة الغاشية",
+            "سورة الفجر",
+            "سورة البلد",
+            "سورة الشمس",
+            "سورة الليل",
+            "سورة الضحى",
+            "سورة الشرح",
+            "سورة التين",
+            "سورة العلق",
+            "سورة القدر",
+            "سورة البينة",
+            "سورة الزلزلة",
+            "سورة العاديات",
+            "سورة القارعة",
+            "سورة التكاثر",
+            "سورة الهمزة",
+            "سورة الفيل",
+            "سورة قريش",
+            "سورة الماعون",
+            "سورة الكوثر",
+            "سورة الكافرون",
+            "سورة النصر",
+            "سورة المسد",
+            "سورة الإخلاص",
+            "سورة الفلق",
+            "سورة الناس"
+        )
+    } else {
+        listOf(
+            "سورة الملك",
+            "سورة المرسلات",
+            "سورة الواقعة",
+            "سورة الحديد",
+            "سورة المجادلة",
+            "سورة الحشر",
+            "سورة الممتحنة",
+            "سورة الصف",
+            "سورة الجمعة",
+            "سورة المنافقون",
+            "سورة التغابن",
+            "سورة الطلاق",
+            "سورة التحريم",
+            "سورة النبأ"
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -63,7 +122,10 @@ fun HomeScreen(navController: NavHostController) {
         },
         bottomBar = { AppBottomBar(navController) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
+            FloatingActionButton(onClick = {
+                currentStep = 1
+                showAddDialog = true
+            }) {
                 Icon(Icons.Filled.Add, contentDescription = "إضافة كلمة")
             }
         }
@@ -92,137 +154,118 @@ fun HomeScreen(navController: NavHostController) {
 
     if (showAddDialog) {
         AlertDialog(
-            onDismissRequest = { showAddDialog = false },
-            title = { Text("إضافة كلمة جديدة") },
+            onDismissRequest = {
+                showAddDialog = false
+                currentStep = 1
+            },
+            title = {
+                Text(
+                    when (currentStep) {
+                        1 -> "اختر الجزء"
+                        2 -> "اختر السورة"
+                        else -> "أدخل الكلمة والمعنى"
+                    }
+                )
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("اختر الجزء:")
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(
-                            selected = selectedJuz == "جزء عم",
-                            onClick = {
-                                selectedJuz = "جزء عم"
-                                selectedSurah = "سورة النبأ"
-                            },
-                            label = { Text("جزء عم") }
-                        )
-                        FilterChip(
-                            selected = selectedJuz == "جزء تبارك",
-                            onClick = {
-                                selectedJuz = "جزء تبارك"
-                                selectedSurah = "سورة الملك"
-                            },
-                            label = { Text("جزء تبارك") }
-                        )
-                    }
+                    when (currentStep) {
+                        1 -> {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FilterChip(
+                                    selected = selectedJuz == "جزء عم",
+                                    onClick = {
+                                        selectedJuz = "جزء عم"
+                                        selectedSurah = surahOptions.first()
+                                    },
+                                    label = { Text("جزء عم") }
+                                )
+                                FilterChip(
+                                    selected = selectedJuz == "جزء تبارك",
+                                    onClick = {
+                                        selectedJuz = "جزء تبارك"
+                                        selectedSurah = surahOptions.first()
+                                    },
+                                    label = { Text("جزء تبارك") }
+                                )
+                            }
+                        }
+                        2 -> {
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                surahOptions.forEach { surah ->
+                                    FilterChip(
+                                        selected = selectedSurah == surah,
+                                        onClick = { selectedSurah = surah },
+                                        label = { Text(surah) }
+                                    )
+                                }
+                            }
+                        }
+                        else -> {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                OutlinedTextField(
+                                    value = wordInput,
+                                    onValueChange = { wordInput = it },
+                                    label = { Text("الكلمة الأساسية") },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
 
-                    Text("اختر السورة:")
-                    val surahOptions = if (selectedJuz == "جزء عم") {
-                        listOf(
-                            "سورة النبأ",
-                            "سورة النازعات",
-                            "سورة عبس",
-                            "سورة التكوير",
-                            "سورة الإنفطار",
-                            "سورة المطففين",
-                            "سورة الإنشقاق",
-                            "سورة البروج",
-                            "سورة الطارق",
-                            "سورة الأعلى",
-                            "سورة الغاشية",
-                            "سورة الفجر",
-                            "سورة البلد",
-                            "سورة الشمس",
-                            "سورة الليل",
-                            "سورة الضحى",
-                            "سورة الشرح",
-                            "سورة التين",
-                            "سورة العلق",
-                            "سورة القدر",
-                            "سورة البينة",
-                            "سورة الزلزلة",
-                            "سورة العاديات",
-                            "سورة القارعة",
-                            "سورة التكاثر",
-                            "سورة الهمزة",
-                            "سورة الفيل",
-                            "سورة قريش",
-                            "سورة الماعون",
-                            "سورة الكوثر",
-                            "سورة الكافرون",
-                            "سورة النصر",
-                            "سورة المسد",
-                            "سورة الإخلاص",
-                            "سورة الفلق",
-                            "سورة الناس"
-                        )
-                    } else {
-                        listOf(
-                            "سورة الملك",
-                            "سورة المرسلات",
-                            "سورة المرسلات",
-                            "سورة النبأ",
-                            "سورة الواقعة",
-                            "سورة الحديد",
-                            "سورة المجادلة",
-                            "سورة الحشر",
-                            "سورة الممتحنة",
-                            "سورة الصف",
-                            "سورة الجمعة",
-                            "سورة المنافقون",
-                            "سورة التغابن",
-                            "سورة الطلاق",
-                            "سورة التحريم",
-                            "سورة الملك"
-                        )
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        surahOptions.forEach { surah ->
-                            FilterChip(
-                                selected = selectedSurah == surah,
-                                onClick = { selectedSurah = surah },
-                                label = { Text(surah) }
-                            )
+                                OutlinedTextField(
+                                    value = meaningInput,
+                                    onValueChange = { meaningInput = it },
+                                    label = { Text("معنى الكلمة") },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
                     }
-
-                    OutlinedTextField(
-                        value = wordInput,
-                        onValueChange = { wordInput = it },
-                        label = { Text("الكلمة الأساسية") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = meaningInput,
-                        onValueChange = { meaningInput = it },
-                        label = { Text("معنى الكلمة") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
-                    val cleanedWord = wordInput.trim()
-                    val cleanedMeaning = meaningInput.trim()
-                    if (cleanedWord.isNotEmpty() && cleanedMeaning.isNotEmpty()) {
-                        scope.launch {
-                            app.repository.addCustomWord(selectedJuz, selectedSurah, cleanedWord, cleanedMeaning)
+                    when (currentStep) {
+                        1 -> currentStep = 2
+                        2 -> currentStep = 3
+                        else -> {
+                            val cleanedWord = wordInput.trim()
+                            val cleanedMeaning = meaningInput.trim()
+                            if (cleanedWord.isNotEmpty() && cleanedMeaning.isNotEmpty()) {
+                                scope.launch {
+                                    app.repository.addCustomWord(selectedJuz, selectedSurah, cleanedWord, cleanedMeaning)
+                                }
+                                Toast.makeText(context, "تمت إضافة الكلمة بنجاح", Toast.LENGTH_SHORT).show()
+                                showAddDialog = false
+                                currentStep = 1
+                                wordInput = ""
+                                meaningInput = ""
+                                selectedSurah = if (selectedJuz == "جزء عم") "سورة النبأ" else "سورة الملك"
+                            }
                         }
-                        Toast.makeText(context, "تمت إضافة الكلمة بنجاح", Toast.LENGTH_SHORT).show()
-                        showAddDialog = false
-                        wordInput = ""
-                        meaningInput = ""
-                        selectedSurah = if (selectedJuz == "جزء عم") "سورة النبأ" else "سورة الملك"
                     }
                 }) {
-                    Text("إضافة")
+                    Text(
+                        when (currentStep) {
+                            1 -> "التالي"
+                            2 -> "التالي"
+                            else -> "إضافة"
+                        }
+                    )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showAddDialog = false }) {
-                    Text("إلغاء")
+                TextButton(onClick = {
+                    if (currentStep == 1) {
+                        showAddDialog = false
+                        currentStep = 1
+                    } else {
+                        currentStep -= 1
+                    }
+                }) {
+                    Text(if (currentStep == 1) "إلغاء" else "رجوع")
                 }
             }
         )
