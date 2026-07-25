@@ -4,8 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,14 +43,15 @@ import androidx.navigation.NavHostController
 import com.tabarak.quranwords.QuranWordsApp
 import com.tabarak.quranwords.ui.components.AppBottomBar
 import com.tabarak.quranwords.ui.navigation.Routes
+import com.tabarak.quranwords.util.rememberRepository
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val app = context.applicationContext as QuranWordsApp
+    val repo = rememberRepository()
     val scope = rememberCoroutineScope()
 
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
@@ -59,63 +60,16 @@ fun HomeScreen(navController: NavHostController) {
     var selectedSurah by rememberSaveable { mutableStateOf("سورة الملك") }
     var wordInput by rememberSaveable { mutableStateOf("") }
     var meaningInput by rememberSaveable { mutableStateOf("") }
+    var surahOptions by remember { mutableStateOf(listOf("سورة الملك")) }
 
-    val surahOptions = if (selectedJuz == "جزء عم") {
-        listOf(
-            "سورة النبأ",
-            "سورة النازعات",
-            "سورة عبس",
-            "سورة التكوير",
-            "سورة الإنفطار",
-            "سورة المطففين",
-            "سورة الإنشقاق",
-            "سورة البروج",
-            "سورة الطارق",
-            "سورة الأعلى",
-            "سورة الغاشية",
-            "سورة الفجر",
-            "سورة البلد",
-            "سورة الشمس",
-            "سورة الليل",
-            "سورة الضحى",
-            "سورة الشرح",
-            "سورة التين",
-            "سورة العلق",
-            "سورة القدر",
-            "سورة البينة",
-            "سورة الزلزلة",
-            "سورة العاديات",
-            "سورة القارعة",
-            "سورة التكاثر",
-            "سورة الهمزة",
-            "سورة الفيل",
-            "سورة قريش",
-            "سورة الماعون",
-            "سورة الكوثر",
-            "سورة الكافرون",
-            "سورة النصر",
-            "سورة المسد",
-            "سورة الإخلاص",
-            "سورة الفلق",
-            "سورة الناس"
-        )
-    } else {
-        listOf(
-            "سورة الملك",
-            "سورة المرسلات",
-            "سورة الواقعة",
-            "سورة الحديد",
-            "سورة المجادلة",
-            "سورة الحشر",
-            "سورة الممتحنة",
-            "سورة الصف",
-            "سورة الجمعة",
-            "سورة المنافقون",
-            "سورة التغابن",
-            "سورة الطلاق",
-            "سورة التحريم",
-            "سورة النبأ"
-        )
+    LaunchedEffect(selectedJuz) {
+        val list = repo.getSurahsForJuz(selectedJuz)
+        if (list.isNotEmpty()) {
+            surahOptions = list
+            if (selectedSurah !in list) {
+                selectedSurah = list.first()
+            }
+        }
     }
 
     Scaffold(
@@ -178,7 +132,6 @@ fun HomeScreen(navController: NavHostController) {
                                     selected = selectedJuz == "جزء عم",
                                     onClick = {
                                         selectedJuz = "جزء عم"
-                                        selectedSurah = surahOptions.first()
                                     },
                                     label = { Text("جزء عم") }
                                 )
@@ -186,17 +139,13 @@ fun HomeScreen(navController: NavHostController) {
                                     selected = selectedJuz == "جزء تبارك",
                                     onClick = {
                                         selectedJuz = "جزء تبارك"
-                                        selectedSurah = surahOptions.first()
                                     },
                                     label = { Text("جزء تبارك") }
                                 )
                             }
                         }
                         2 -> {
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 surahOptions.forEach { surah ->
                                     FilterChip(
                                         selected = selectedSurah == surah,
